@@ -2,13 +2,13 @@ import pandas
 import requests
 
 import os
-os.environ.setdefault("DJANGO_SETTINGS_MODULE","mysite.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE","ssStock.settings")
 
 
 import django
 django.setup()
 
-from companyData.models import CompanyData
+from CompanyData.models import CompanyData
 
 '''
 https://kind.krx.co.kr/corpgeneral/corpList.do?method=loadInitPage 홈페이지로 접속
@@ -48,7 +48,9 @@ class GetCompanyData:
             companyListStartDate = self.stockInfoDf.loc[i, '상장일'],\
             companyCEO = self.stockInfoDf.loc[i, '대표자명'],\
             companySite = self.stockInfoDf.loc[i, '홈페이지'],\
-            companyLocal = self.stockInfoDf.loc[i, '지역']).save()
+            companyLocal = self.stockInfoDf.loc[i, '지역']).save() 
+            #save function execute insert or update, so duplicated data will be udpated
+            print('items : {}/{}'.format(i,self.stockInfoDf.index))
                         
 if __name__ == '__main__':
     parsedData = GetCompanyData()
