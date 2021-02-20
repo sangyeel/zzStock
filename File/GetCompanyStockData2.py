@@ -1,6 +1,8 @@
 import pandas
 import requests
 import io
+import bs4
+import re
 
 class GetCompanyStockData:
     __URL     = 'https://finance.naver.com/item/sise_day.nhn?code='

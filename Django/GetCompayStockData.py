@@ -1,6 +1,8 @@
 import pandas
 import requests
 import io
+import bs4
+import re
 
 
 import os
@@ -18,7 +20,6 @@ class GetCompanyStockData:
     def __init__(self,stockCode):
         self.stockCode = stockCode
         self.lastPageNum = 0
-        self.totalStockList = []
         self.get_last_page_number()
         self.get_stock_data_with_data_frame()
     
@@ -47,7 +48,14 @@ class GetCompanyStockData:
             tempDataFrameList = pandas.read_html(res.text)
             tempDataFrame = tempDataFrameList[0] #Naver stock has 2table, one is stock data other one is pagenation table
             tempDataFrame = tempDataFrame.dropna() #drop 'na' data
-            print(tempDataFrame)
+            for i in tempDataFrame.index:
+                CompanyStockData(companyStockCode = self.stockCode,\
+                companyStockDate = tempDataFrame.loc[i,"날짜"],\
+                companyStockEndPrice = tempDataFrame.loc[i,'종가'],\
+                companyStockStartPrice = tempDataFrame.loc[i,'시가'],\
+                companyStockLowPrice = tempDataFrame.loc[i,'저가'],\
+                companyStockHighPrice = tempDataFrame.loc[i,'고가'],\
+                companyStockQuantity = tempDataFrame.loc[i,'거래량']).save()
             
 if __name__ == '__main__':
-    parsedData = CompanyStockData('318010')
+    parsedData = GetCompanyStockData('318010')
