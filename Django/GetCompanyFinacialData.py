@@ -1,17 +1,17 @@
 import pandas
 import requests
 import os
-os.environ.setdefault("DJANGO_SETTINGS_MODULE","mysite.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE","ssStock.settings")
 
 
 import django
 django.setup()
 
-from companyFinData.models import CompanyFinData
+from CompanyFinData.models import CompanyFinData
 
 
-class GetCompanyFinacialData:
-    __URL  = 'http://kind.krx.co.kr/compfinance/financialinfo.do'
+class GetCompanyFinData:
+    __URL  = 'https://kind.krx.co.kr/compfinance/financialinfo.do'
     __POSTDATA = {\
     'A080': 'checkbox',\
     'A110': 'checkbox',\
@@ -41,11 +41,11 @@ class GetCompanyFinacialData:
     __END_YEAR = 2020
     
     def __init__(self,stockCode):
-        GetCompanyFinacialData.__POSTDATA['arrIsurCd'] = stockCode
+        GetCompanyFinData.__POSTDATA['arrIsurCd'] = stockCode
         
-        for i in range(GetCompanyFinacialData.__START_YEAR,GetCompanyFinacialData.__END_YEAR):
-            GetCompanyFinacialData.__POSTDATA['fiscalyear'] = str(i)
-            res = requests.post(GetCompanyFinacialData.__URL,data = GetCompanyFinacialData.__POSTDATA)
+        for i in range(GetCompanyFinData.__START_YEAR,GetCompanyFinData.__END_YEAR):
+            GetCompanyFinData.__POSTDATA['fiscalyear'] = str(i)
+            res = requests.post(GetCompanyFinData.__URL,data = GetCompanyFinData.__POSTDATA)
             companyFinacialDataList = pandas.read_html(res.text)
             self.financialDataInfoDf = companyFinacialDataList[0]
             self.financialDataInfoDf.columns = ['index','CompanyName','자산총계','부채총계','자본총계','매출액','영업이익','법인세차감전계속사업이익','당기순이익']
@@ -63,4 +63,4 @@ class GetCompanyFinacialData:
 
         
 if __name__ == '__main__':
-    parsedData = GetCompanyFinacialData('00593')
+    parsedData = GetCompanyFinData('00593')
