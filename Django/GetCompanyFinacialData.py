@@ -1,6 +1,7 @@
 import pandas
 import requests
 import os
+import time
 os.environ.setdefault("DJANGO_SETTINGS_MODULE","ssStock.settings")
 
 
@@ -11,7 +12,7 @@ from CompanyFinData.models import CompanyFinData
 
 
 class GetCompanyFinData:
-    __URL  = 'https://kind.krx.co.kr/compfinance/financialinfo.do'
+    __URL  = 'https://kind.krx.co.kr/compfinance/financialinfo.do' #URL changed from http to https
     __POSTDATA = {\
     'A080': 'checkbox',\
     'A110': 'checkbox',\
@@ -37,11 +38,12 @@ class GetCompanyFinData:
     'searchCodeType':'',\
     'searchCorpName': '',\
     'titleofaccnt': 'A080|A110|A160|A170|A180|A190|A200'}
-    __START_YEAR = 1996
+    __START_YEAR = 2019
     __END_YEAR = 2020
     
     def __init__(self,stockCode):
-        GetCompanyFinData.__POSTDATA['arrIsurCd'] = stockCode
+        changedStockCode = stockCode[0:5]
+        GetCompanyFinData.__POSTDATA['arrIsurCd'] = changedStockCode
         
         for i in range(GetCompanyFinData.__START_YEAR,GetCompanyFinData.__END_YEAR):
             GetCompanyFinData.__POSTDATA['fiscalyear'] = str(i)
@@ -60,7 +62,8 @@ class GetCompanyFinData:
             companyTotalBuzProfits = self.financialDataInfoDf.loc[0,'영업이익'],\
             companyTotalIncomeBeforeTax = self.financialDataInfoDf.loc[0,'법인세차감전계속사업이익'],\
             companyTotalNetIncome = self.financialDataInfoDf.loc[0,'당기순이익']).save()
+            time.sleep(5)
 
         
 if __name__ == '__main__':
-    parsedData = GetCompanyFinData('00593')
+    parsedData = GetCompanyFinData('224020')
