@@ -17,7 +17,7 @@ class GetCompanyTodayStockData:
     
     def __init__(self,stockCode):
         self.stockCode = stockCode
-        self.get_today_stock_data()
+        self.todayStockPrice = self.get_today_stock_data()
     
     def get_today_stock_data(self):
         targetUrl = GetCompanyTodayStockData.__URL + self.stockCode + '&page=1'
@@ -25,7 +25,8 @@ class GetCompanyTodayStockData:
         tempDataFrameList = pandas.read_html(res.text)
         tempDataFrame = tempDataFrameList[0] #Naver stock has 2table, one is stock data other one is pagenation table
         tempDataFrame = tempDataFrame.dropna() #drop 'na' data
-        print(tempDataFrame.loc[1,"종가"])
+        return tempDataFrame.loc[1,"종가"]
         
 if __name__ == '__main__':
-    GetCompanyTodayStockData('005930')
+    TodayStock = GetCompanyTodayStockData('005930')
+    print(TodayStock.todayStockPrice)
