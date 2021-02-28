@@ -10,6 +10,7 @@ from GetCompanyFinData import GetCompanyFinData
 from CompanyDataFromKrx.models import CompanyDataFromKrx
 from CompanyData.models import CompanyData
 from GetCompanyTodayStockData import GetCompanyTodayStockData
+import pandas as pd
 
 def getComanyFinDataFromDB():
     tempCompanyDataSet = CompanyData.objects.all()
@@ -33,15 +34,21 @@ def GetTodayStockTotal():
     tempCompanyDataSet = CompanyDataFromKrx.objects.all()
     totalCompanyDataCnt = CompanyDataFromKrx.objects.count()
     currentIndex = 0;
+    curCompanyDf = pd.DataFrame(columns=['companyName', 'stockTotalSize'])
     for tempCompanyData in tempCompanyDataSet:
-        currentIndex = currentIndex + 1
         try:
+            print('start')
             curCompany = CompanyData.objects.get(companyStockCode = tempCompanyData.companyStockCode)
-            #print(curCompany.companyName)
-        except:
+            curCompanyTodayStockInfo = GetCompanyTodayStockData(tempCompanyData.companyStockCode)
+            curComanyStockTotalSize = int(curCompanyTodayStockInfo.todayStockPrice) * int(tempCompanyData.companyStockTotal)
+            curCompanyDf.loc[currentIndex] = [curCompany.companyName,curComanyStockTotalSize]
+            currentIndex = currentIndex + 1
+            print("%d / %d" %(currentIndex,totalCompanyDataCnt))
+        except Exception as e:
+            print(e)
             print(tempCompanyData.companyStockCode)#우선주들은 여기서 이미 다 빠짐 company 정보가 없어서..
     
-    
+    print(curCompanyDf)
 if __name__ == '__main__':
     GetTodayStockTotal()
     
